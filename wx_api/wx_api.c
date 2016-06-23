@@ -27,9 +27,12 @@
 #include "debug.h"
 
 #include <libgen.h>
+#include <mxml.h>
 
 #define __PATH_MAX            256            /*  */
 #define RET_MAX            512/*  */
+
+#define WX_ACCOUNT_CONF   "./account.xml"            /*  */
 
 #ifdef PYTHON_IMPLEMENT
 static const char * excute_python(int argc, const char **argv, const char *func_name)
@@ -222,9 +225,69 @@ wx_ret_e wx_order_query(wx_pay_account_t *accout, const char *out_trade_no)
 #endif
 wx_ret_e wx_set_account(wx_pay_account_t *account)
 {
-    return 0;
+    FILE *fp;
+    char buf[40]={0};
+
+    mxml_node_t *xml;    
+    mxml_node_t *account_node;  
+    mxml_node_t *node;
+    xml = mxmlNewXML("1.0");
+    account_node = mxmlNewElement(xml, "account");
+    node = mxmlNewElement(account_node, "appid");
+    mxmlNewText(node, 0, account->app_id);
+
+    node = mxmlNewElement(account_node, "appsecret");
+    mxmlNewText(node, 0, account->app_secret);
+    node = mxmlNewElement(account_node, "key");
+    mxmlNewText(node, 0, account->key);
+    node = mxmlNewElement(account_node, "mchid");
+    mxmlNewText(node, 0, account->mch_id);
+
+    node = mxmlNewElement(account_node, "notify_url");
+    mxmlNewText(node, 0, "");
+
+    node = mxmlNewElement(account_node, "sslkey_path");
+    mxmlNewText(node, 0, "");
+    node = mxmlNewElement(account_node, "curl_timeout");
+    sprintf(buf, "%d", account->curl_timeout);
+    mxmlNewText(node, 0, buf);
+
+    fp = fopen(WX_ACCOUNT_CONF, "w");
+    if (fp)
+    {
+        mxmlSaveFile(xml, fp, NULL);
+        fclose(fp);
+    }
+    mxmlDelete(xml);
+    
+    return WX_SUCCESS;
 }
 wx_ret_e wx_get_account(wx_pay_account_t *account)
 {
-    return 0;
+    FILE *fp;
+    mxml_node_t *tree,*node;
+
+    fp = fopen(WX_ACCOUNT_CONF, "r");
+    if (!fp)
+    {
+        return 0;
+    }
+    tree = mxmlLoadFile(NULL, fp, MXML_TEXT_CALLBACK);
+    fclose(fp);    
+    mxml_node_t *appid,*appsecret, *key, *mchid, *curl_timeout;
+
+    node = mxmlFindElement(tree, tree, "account",NULL, NULL,MXML_DESCEND);
+    appid = mxmlFindElement(node, tree, "appid",NULL, NULL,MXML_DESCEND);
+    strcpy(account->app_id, appid->child->value.text.string); 
+
+    appsecret = mxmlFindElement(node, tree, "app_secret",NULL, NULL,MXML_DESCEND);
+    strcpy(account->app_secret, appsecret->child->value.text.string); 
+    mchid = mxmlFindElement(node, tree, "mch_id",NULL, NULL,MXML_DESCEND);
+    strcpy(account->mch_id, mchid->child->value.text.string); 
+    key = mxmlFindElement(node, tree, "key",NULL, NULL,MXML_DESCEND);
+    strcpy(account->key, key->child->value.text.string); 
+    curl_timeout = mxmlFindElement(node, tree, "curl_timeout",NULL, NULL,MXML_DESCEND);
+    sscanf(curl_timeout->child->value.text.string, "%d", &account->curl_timeout);
+    
+    return WX_SUCCESS;
 }

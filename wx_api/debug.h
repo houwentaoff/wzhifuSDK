@@ -28,6 +28,7 @@
 
 #define     WIFI_ERROR                            1  /* 1 is open , 0 is close */
 #define     WIFI_DEBUG                            1  /* 1 is open , 0 is close */
+#define     RFID_DEBUG				1	/* 1 is open , 0 is close */
 
 #define     WX_ERROR                            1  /* 1 is open , 0 is close */
 #define     WX_DEBUG                            1  /* 1 is open , 0 is close */
@@ -73,6 +74,12 @@
 }while(0)    /*  */    
 #else
 #define WIFI_ERR(fmt, args...)  
+#endif
+
+#if RFID_DEBUG
+#define RFID_DBG(fmt, args...)            printf("[RFID]:---> %s():"fmt"\n", __func__, ##args)/*   */
+#else
+#define RFID_DBG(fmt, args...)
 #endif
 
 #if WX_DEBUG

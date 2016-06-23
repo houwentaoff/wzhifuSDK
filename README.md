@@ -5,7 +5,7 @@
 * 支持申请订单 和 查询付款结果
 
 ## 测试
-1. `make test_pay`
+1. `make test_pay PC=1`
 2. `./test_pay`
 
 ## wzhifuSDK

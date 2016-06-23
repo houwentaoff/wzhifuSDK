@@ -377,6 +377,18 @@ class UnifiedOrder_pub(Wxpay_client_pub):
         self.parameters["sign"] = self.getSign(self.parameters)  #签名
         return  self.arrayToXml(self.parameters)
 
+    def getCodeURL(self):
+        """获取prepay_id"""
+        self.postXml()
+        self.result = self.xmlToArray(self.response)
+        print '[wx]:---> result:', self.result["return_msg"], self.result
+        try:
+            prepay_id = self.result["code_url"]
+            return prepay_id
+        except KeyError:
+            print '[wx]: [ERROR] : no code_url'
+            return "-1:"+self.result["return_msg"].encode("utf8")
+
     def getPrepayId(self):
         """获取prepay_id"""
         self.postXml()
@@ -649,7 +661,8 @@ def test_req_order(out_trade_no, body, total_fee, trade_type, notify_url):
     p.setParameter("trade_type", trade_type)
     p.setParameter("notify_url", notify_url)
 #    p.getPrepayId()
-    return p.getPrepayId()
+#    return p.getPrepayId()
+    return p.getCodeURL()
 #    return p.getPrepayId()
 
 def test_pay():

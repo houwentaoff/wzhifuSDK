@@ -81,7 +81,7 @@ int main ( int argc, char *argv[] )
         WX_ERR("req order fail error[%d]\n", ret);   
         goto req_err;
     }
-    WX_DBG("req order success\n");
+    WX_DBG("req order success code_url is [%s]\n", code_url);
     wx_gen_qrcode(code_url, "./", "pay.png");
 #endif
     while (1)

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schedule>
+    <record>
+        <program_content>val4</program_content>
+        <from>val5</from>
+        <to>val6</to>
+        <mode>val6</mode>
+        <frequency>val6</frequency>
+        <pre_set_from>val6</pre_set_from>
+    </record>
+    <record><program_content>val4</program_content><from>val5</from><to>val6</to><mode>val6</mode><frequency>val6</frequency><pre_set_from>val6</pre_set_from></record><space><FHD>val4</FHD><SHD>val5</SHD><MAC>1234567</MAC></space></schedule>

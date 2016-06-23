@@ -94,6 +94,36 @@ int wx_gen_qrcode(const char *code_url, const char *qr_path, const char *qr_name
  */
 wx_ret_e wx_order_query(wx_pay_account_t *accout, const char *out_trade_no);
 
+/**
+ * @brief 设置用户账号信息
+ *
+ * @param account 参考wx_pay_account_t结构
+ *
+ * @return 成功返回WX_SUCCESS 错误返回错误码
+ */
+#ifdef WX_PAY
 wx_ret_e wx_set_account(wx_pay_account_t *account);
+#else
+inline wx_ret_e wx_set_account(wx_pay_account_t *account)
+{
+    return WX_SUCCESS;
+}
+#endif
+
+/**
+ * @brief 获得用户账号信息
+ *
+ * @param account 参考wx_pay_account_t结构
+ *
+ * @return 成功返回WX_SUCCESS 错误返回错误码
+ */
+#ifdef WX_PAY
 wx_ret_e wx_get_account(wx_pay_account_t *account);
+#else
+inline wx_ret_e wx_get_account(wx_pay_account_t *account)
+ {
+     return WX_SUCCESS;
+ }
+#endif
+
 #endif
