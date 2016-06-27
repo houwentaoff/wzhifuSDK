@@ -278,16 +278,53 @@ wx_ret_e wx_get_account(wx_pay_account_t *account)
 
     node = mxmlFindElement(tree, tree, "account",NULL, NULL,MXML_DESCEND);
     appid = mxmlFindElement(node, tree, "appid",NULL, NULL,MXML_DESCEND);
-    strcpy(account->app_id, appid->child->value.text.string); 
 
-    appsecret = mxmlFindElement(node, tree, "app_secret",NULL, NULL,MXML_DESCEND);
-    strcpy(account->app_secret, appsecret->child->value.text.string); 
-    mchid = mxmlFindElement(node, tree, "mch_id",NULL, NULL,MXML_DESCEND);
-    strcpy(account->mch_id, mchid->child->value.text.string); 
+    if (!appid || !appid->child)
+    {
+        *(account->app_id) = '\0';
+    }
+    else
+    {
+        strcpy(account->app_id, appid->child->value.text.string);
+    }
+    appsecret = mxmlFindElement(node, tree, "appsecret",NULL, NULL,MXML_DESCEND);
+    if (!appsecret || !appsecret->child)
+    {
+        *account->app_secret = '\0';
+    }
+    else
+    {
+        strcpy(account->app_secret, appsecret->child->value.text.string); 
+    }
+    mchid = mxmlFindElement(node, tree, "mchid",NULL, NULL,MXML_DESCEND);
+    if (!mchid || !mchid->child)
+    {
+        *account->mch_id = '\0';
+    }
+    else
+    {
+        strcpy(account->mch_id, mchid->child->value.text.string); 
+    }
+   
     key = mxmlFindElement(node, tree, "key",NULL, NULL,MXML_DESCEND);
-    strcpy(account->key, key->child->value.text.string); 
+     if (!key || !key->child)
+    {
+        *account->key = '\0';
+    }
+    else
+    {
+        strcpy(account->key, key->child->value.text.string); 
+    }
     curl_timeout = mxmlFindElement(node, tree, "curl_timeout",NULL, NULL,MXML_DESCEND);
-    sscanf(curl_timeout->child->value.text.string, "%d", &account->curl_timeout);
-    
+    if (!curl_timeout || !curl_timeout->child)
+    {
+        curl_timeout = 0 ;
+    }
+    else
+    {
+        sscanf(curl_timeout->child->value.text.string, "%d", &account->curl_timeout);
+    }
+   
+   
     return WX_SUCCESS;
 }

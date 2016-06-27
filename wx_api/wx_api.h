@@ -104,7 +104,7 @@ wx_ret_e wx_order_query(wx_pay_account_t *accout, const char *out_trade_no);
 #ifdef WX_PAY
 wx_ret_e wx_set_account(wx_pay_account_t *account);
 #else
-inline wx_ret_e wx_set_account(wx_pay_account_t *account)
+static inline wx_ret_e wx_set_account(wx_pay_account_t *account)
 {
     return WX_SUCCESS;
 }
@@ -120,7 +120,7 @@ inline wx_ret_e wx_set_account(wx_pay_account_t *account)
 #ifdef WX_PAY
 wx_ret_e wx_get_account(wx_pay_account_t *account);
 #else
-inline wx_ret_e wx_get_account(wx_pay_account_t *account)
+static inline wx_ret_e wx_get_account(wx_pay_account_t *account)
  {
      return WX_SUCCESS;
  }
