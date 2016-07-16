@@ -654,16 +654,20 @@ def test_order_query(out_trade_no):
         return m["return_msg"]
 
 def test_req_order(out_trade_no, body, total_fee, trade_type, notify_url):
-    p = UnifiedOrder_pub()
-    p.setParameter("out_trade_no", WxPayConf_pub.MCHID + out_trade_no)
-    p.setParameter("body", body)
-    p.setParameter("total_fee", total_fee)
-    p.setParameter("trade_type", trade_type)
-    p.setParameter("notify_url", notify_url)
-#    p.getPrepayId()
+    try:
+        p = UnifiedOrder_pub()
+        p.setParameter("out_trade_no", WxPayConf_pub.MCHID + out_trade_no)
+        p.setParameter("body", body)
+        p.setParameter("total_fee", total_fee)
+        p.setParameter("trade_type", trade_type)
+        p.setParameter("notify_url", notify_url)
+    #   p.getPrepayId()
+    #   return p.getPrepayId()
+        return p.getCodeURL()
 #    return p.getPrepayId()
-    return p.getCodeURL()
-#    return p.getPrepayId()
+    except ValueError:
+        print '[wx] [ERROR] : miss parameter'
+        return "-1:"+"miss parameter".encode("utf8")
 
 def test_pay():
     p = UnifiedOrder_pub()

@@ -21,6 +21,13 @@
 
 #define RESERVED_MAX            100            /*  */
 
+#define  WX_RequestOrder(x,y,z)      wx_request_order(x,y,z)            /*  */
+#define  WX_OrderQuery(x,y)          wx_order_query(x,y)            /*  */
+#define  WX_GenQrCode(x,y,z)         wx_gen_qrcode(x,y,z)         /*  */
+#define  WX_SetAccount(x)            wx_set_account(x)            /*  */
+#define  WX_GetAccount(x)            wx_get_account(x)            /*  */
+#define  WX_GetTimeStamp()            wx_get_time_stamp()            /*  */
+
 typedef struct wx_pay_account
 {
    char *app_id;
@@ -64,6 +71,13 @@ typedef struct wx_order_info
     char *total_fee;/* 金额总数 */
     char *notify_url;
 }wx_order_info_t;
+
+/**
+ * @brief 返回当前微信产生订单的时间戳 如 201606171139
+ *
+ * @return 
+ */
+const char *wx_get_time_stamp();
 /**
  * @brief 向微信后端发送订单请求
  *

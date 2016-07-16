@@ -16,9 +16,7 @@
  *
  * =====================================================================================
  */
-//#include <stdio.h>
-//#include <stdlib.h>
-#define PYTHON_IMPLEMENT            /*  */
+//#define PYTHON_IMPLEMENT            /*  */
 #ifdef PYTHON_IMPLEMENT
 #include <Python.h>
 #endif
@@ -34,6 +32,41 @@
 
 #define WX_ACCOUNT_CONF   "./account.xml"            /*  */
 
+#define TIMEZONE_OFFSET(foo) foo->tm_gmtoff
+
+const char *wx_get_time_stamp()
+{
+    wx_ret_e ret;
+    struct tm *t;
+    time_t current_time;
+    int time_offset;
+    static char time_buf[100] = {0};
+
+    time(&current_time);
+
+    t = localtime(&current_time);
+    time_offset = TIMEZONE_OFFSET(t);
+    sprintf(time_buf, "%d%.2d%.2d%.2d%.2d%.2d",
+            1900 + t->tm_year,
+            1 + t->tm_mon,
+            t->tm_mday,
+            t->tm_hour,
+            t->tm_min,
+            t->tm_sec);
+    /*-----------------------------------------------------------------------------
+     *  $input->SetOut_trade_no(WxPayConfig::MCHID.date("YmdHis"));
+     *
+     *  Y - Äê£¬ËÄÎ»Êý×Ö; Èç: "1999"
+     *  m - ÔÂ·Ý£¬¶þÎ»Êý×Ö£¬Èô²»×ã¶þÎ»ÔòÔÚÇ°Ãæ²¹Áã; Èç: "01" ÖÁ "12"
+     *  d - ¼¸ÈÕ£¬¶þÎ»Êý×Ö£¬Èô²»×ã¶þÎ»ÔòÇ°Ãæ²¹Áã; Èç: "01" ÖÁ "31"
+     *  H - 24 Ð¡Ê±ÖÆµÄÐ¡Ê±; Èç: "00" ÖÁ "23"
+     *  i - ·ÖÖÓ; Èç: "00" ÖÁ "59"
+     *  s - Ãë; Èç: "00" ÖÁ "59"
+     *  eg:  mchid+201606171139
+     *-----------------------------------------------------------------------------*/
+    return (char *) time_buf;
+
+}
 #ifdef PYTHON_IMPLEMENT
 static const char * excute_python(int argc, const char **argv, const char *func_name)
 {
@@ -92,7 +125,7 @@ static const char * excute_python(int argc, const char **argv, const char *func_
     }
 #if 0
     PyTuple_SetItem(pArgs, i, Py_BuildValue("s", "121212123")); 
-    PyTuple_SetItem(pArgs, 1, Py_BuildValue("s", "è´¡çŒ®ä¸€è§’é’±")); 
+    PyTuple_SetItem(pArgs, 1, Py_BuildValue("s", "¹±Ï×Ò»½ÇÇ®")); 
     PyTuple_SetItem(pArgs, 2, Py_BuildValue("s", "1")); 
     PyTuple_SetItem(pArgs, 3, Py_BuildValue("s", "3333333")); 
     PyTuple_SetItem(pArgs, 4, Py_BuildValue("s", "NATIVE")); 
@@ -137,13 +170,13 @@ wx_ret_e wx_request_order(wx_pay_account_t *account, wx_order_info_t *order, cha
         if ( 0 == strncmp("-1:", ret_str, strlen("-1")))
         {
             ret = WX_UNKNOWERR;
-            if ( 0 == strcmp(&ret_str[3], "ç­¾åé”™è¯¯"))
+            if ( 0 == strcmp(&ret_str[3], "Ç©Ãû´íÎó"))
             {
                 ret = WX_SIGNERROR;
             }
-            if ( 0 == strcmp(&ret_str[3], "appidä¸å­˜åœ¨") ||
-                 0 == strcmp(&ret_str[3], "mch_idå‚æ•°æ ¼å¼é”™è¯¯")||
-                 0 == strcmp(&ret_str[3], "å•†æˆ·å·mch_idæˆ–sub_mch_idä¸å­˜åœ¨")
+            if ( 0 == strcmp(&ret_str[3], "appid²»´æÔÚ") ||
+                 0 == strcmp(&ret_str[3], "mch_id²ÎÊý¸ñÊ½´íÎó")||
+                 0 == strcmp(&ret_str[3], "ÉÌ»§ºÅmch_id»òsub_mch_id²»´æÔÚ")
                  )
             {
                 ret = WX_PARAM_ERROR;
@@ -191,11 +224,11 @@ wx_ret_e wx_order_query(wx_pay_account_t *account, const char *out_trade_no)
             {
                 ret = WX_ORDERNOTPAY;
             }
-//            if ( 0 == strcmp(&ret_str[3], "appidä¸å­˜åœ¨"))
+//            if ( 0 == strcmp(&ret_str[3], "appid²»´æÔÚ"))
 //            {
 //                ret = WX_PARAM_ERROR;
 //            }
-            if ( 0 == strcmp(&ret_str[3], "ç­¾åé”™è¯¯"))
+            if ( 0 == strcmp(&ret_str[3], "Ç©Ãû´íÎó"))
             {
                 ret = WX_SIGNERROR;
             }
@@ -305,9 +338,9 @@ wx_ret_e wx_get_account(wx_pay_account_t *account)
     {
         strcpy(account->mch_id, mchid->child->value.text.string); 
     }
-   
+    
     key = mxmlFindElement(node, tree, "key",NULL, NULL,MXML_DESCEND);
-     if (!key || !key->child)
+    if (!key || !key->child)
     {
         *account->key = '\0';
     }
@@ -325,6 +358,6 @@ wx_ret_e wx_get_account(wx_pay_account_t *account)
         sscanf(curl_timeout->child->value.text.string, "%d", &account->curl_timeout);
     }
    
-   
+    
     return WX_SUCCESS;
 }
