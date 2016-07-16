@@ -9,7 +9,8 @@
 ### PC
 1. `make test_pay PC=1`
 2. `./test_pay`
-### arm
+
+### arm  
 1. 修改`env.mk`中的变量`CROSS_COMPILE`
 2. `cd wx_api;make`
 3. `make test_pay`
