@@ -646,8 +646,8 @@ def test_order_query(out_trade_no):
         print '[wx]: [ERROR] : return code'
         return "-1:" + m["return_msg"].encode("utf8")
     elif m['return_code'] == "SUCCESS":
-        if m['trade_state'] == "PAY":
-            return m['trade_state']
+        if m['trade_state'] == "PAY" or m['trade_state'] == "SUCCESS":
+            return "PAY".encode("utf-8") #return m['trade_state']
         else:
             return "-1:" + m["trade_state"]
     else:
