@@ -56,12 +56,12 @@ const char *wx_get_time_stamp()
     /*-----------------------------------------------------------------------------
      *  $input->SetOut_trade_no(WxPayConfig::MCHID.date("YmdHis"));
      *
-     *  Y - Äê£¬ËÄÎ»Êı×Ö; Èç: "1999"
-     *  m - ÔÂ·İ£¬¶şÎ»Êı×Ö£¬Èô²»×ã¶şÎ»ÔòÔÚÇ°Ãæ²¹Áã; Èç: "01" ÖÁ "12"
-     *  d - ¼¸ÈÕ£¬¶şÎ»Êı×Ö£¬Èô²»×ã¶şÎ»ÔòÇ°Ãæ²¹Áã; Èç: "01" ÖÁ "31"
-     *  H - 24 Ğ¡Ê±ÖÆµÄĞ¡Ê±; Èç: "00" ÖÁ "23"
-     *  i - ·ÖÖÓ; Èç: "00" ÖÁ "59"
-     *  s - Ãë; Èç: "00" ÖÁ "59"
+     *  Y - å¹´ï¼Œå››ä½æ•°å­—; å¦‚: "1999"
+     *  m - æœˆä»½ï¼ŒäºŒä½æ•°å­—ï¼Œè‹¥ä¸è¶³äºŒä½åˆ™åœ¨å‰é¢è¡¥é›¶; å¦‚: "01" è‡³ "12"
+     *  d - å‡ æ—¥ï¼ŒäºŒä½æ•°å­—ï¼Œè‹¥ä¸è¶³äºŒä½åˆ™å‰é¢è¡¥é›¶; å¦‚: "01" è‡³ "31"
+     *  H - 24 å°æ—¶åˆ¶çš„å°æ—¶; å¦‚: "00" è‡³ "23"
+     *  i - åˆ†é’Ÿ; å¦‚: "00" è‡³ "59"
+     *  s - ç§’; å¦‚: "00" è‡³ "59"
      *  eg:  mchid+201606171139
      *-----------------------------------------------------------------------------*/
     return (char *) time_buf;
@@ -86,11 +86,10 @@ static const char * excute_python(int argc, const char **argv, const char *func_
     strcpy(tmp_buf, argv[0]);
     python_name = basename((char *)&tmp_buf[0]);
     dir_name    = dirname((char *)&tmp_buf[0]);
-
-    Py_Initialize(); 
+    /* Fix Py_Finalize å¼•èµ·çš„å†…å­˜æ³„æ¼ */
     if ( !Py_IsInitialized() ) 
-    { 
-        return NULL; 
+    {  
+        Py_Initialize();  
     } 
 
     PyRun_SimpleString("import sys"); 
@@ -125,7 +124,7 @@ static const char * excute_python(int argc, const char **argv, const char *func_
     }
 #if 0
     PyTuple_SetItem(pArgs, i, Py_BuildValue("s", "121212123")); 
-    PyTuple_SetItem(pArgs, 1, Py_BuildValue("s", "¹±Ï×Ò»½ÇÇ®")); 
+    PyTuple_SetItem(pArgs, 1, Py_BuildValue("s", "è´¡çŒ®ä¸€è§’é’±")); 
     PyTuple_SetItem(pArgs, 2, Py_BuildValue("s", "1")); 
     PyTuple_SetItem(pArgs, 3, Py_BuildValue("s", "3333333")); 
     PyTuple_SetItem(pArgs, 4, Py_BuildValue("s", "NATIVE")); 
@@ -142,7 +141,8 @@ static const char * excute_python(int argc, const char **argv, const char *func_
     Py_DECREF(pName); 
     Py_DECREF(pArgs); 
     Py_DECREF(pModule); 
-    Py_Finalize(); 
+    /* Fix Py_Finalize å¼•èµ·çš„å†…å­˜æ³„æ¼ ï¼Œåœ¨mainå‡½æ•°çš„é€€å‡ºå‡½æ•°ä¸­ä½¿ç”¨è¯¥è¯­å¥ */
+    //Py_Finalize(); 
     return (const char *)ret_buf;
    
 }
@@ -170,13 +170,13 @@ wx_ret_e wx_request_order(wx_pay_account_t *account, wx_order_info_t *order, cha
         if ( 0 == strncmp("-1:", ret_str, strlen("-1")))
         {
             ret = WX_UNKNOWERR;
-            if ( 0 == strcmp(&ret_str[3], "Ç©Ãû´íÎó"))
+            if ( 0 == strcmp(&ret_str[3], "ç­¾åé”™è¯¯"))
             {
                 ret = WX_SIGNERROR;
             }
-            if ( 0 == strcmp(&ret_str[3], "appid²»´æÔÚ") ||
-                 0 == strcmp(&ret_str[3], "mch_id²ÎÊı¸ñÊ½´íÎó")||
-                 0 == strcmp(&ret_str[3], "ÉÌ»§ºÅmch_id»òsub_mch_id²»´æÔÚ")
+            if ( 0 == strcmp(&ret_str[3], "appidä¸å­˜åœ¨") ||
+                 0 == strcmp(&ret_str[3], "mch_idå‚æ•°æ ¼å¼é”™è¯¯")||
+                 0 == strcmp(&ret_str[3], "å•†æˆ·å·mch_idæˆ–sub_mch_idä¸å­˜åœ¨")
                  )
             {
                 ret = WX_PARAM_ERROR;
@@ -224,11 +224,11 @@ wx_ret_e wx_order_query(wx_pay_account_t *account, const char *out_trade_no)
             {
                 ret = WX_ORDERNOTPAY;
             }
-//            if ( 0 == strcmp(&ret_str[3], "appid²»´æÔÚ"))
+//            if ( 0 == strcmp(&ret_str[3], "appidä¸å­˜åœ¨"))
 //            {
 //                ret = WX_PARAM_ERROR;
 //            }
-            if ( 0 == strcmp(&ret_str[3], "Ç©Ãû´íÎó"))
+            if ( 0 == strcmp(&ret_str[3], "ç­¾åé”™è¯¯"))
             {
                 ret = WX_SIGNERROR;
             }
